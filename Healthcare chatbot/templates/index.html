@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Healthcare Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712072.png" alt="Bot Icon" class="bot-icon">
+
+    <h2>AI Healthcare Chatbot</h2>
+
+    <div class="chat-box" id="chat-box">
+      <div class="bot bubble">Hi! I’m your healthcare assistant. How can I help you today?</div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Describe your symptoms..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const message = input.value.trim();
+      if (message) {
+        const chatBox = document.getElementById('chat-box');
+
+        const userBubble = document.createElement('div');
+        userBubble.className = 'user bubble';
+        userBubble.textContent = message;
+        chatBox.appendChild(userBubble);
+
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Fetch bot response
+        const response = await fetch('/get', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ msg: message }),
+        });
+        const data = await response.json();
+
+        const botBubble = document.createElement('div');
+        botBubble.className = 'bot bubble';
+        botBubble.textContent = data.response;
+        chatBox.appendChild(botBubble);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+  </script>
+</body>
+</html>
